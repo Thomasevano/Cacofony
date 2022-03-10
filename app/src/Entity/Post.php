@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Cacofony\Factory\PDOFactory;
+use App\Manager\UserManager;
 use Cacofony\BaseClasse\BaseEntity;
 use DateTime;
 use Exception;
@@ -85,6 +87,15 @@ class Post extends BaseEntity
     {
         $this->content = $content;
         return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getAuthor(): User
+    {
+        $manager = new UserManager(PDOFactory::getInstance());
+        return $manager->findById($this->authorId);
     }
 
     /**

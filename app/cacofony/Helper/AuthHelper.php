@@ -2,7 +2,9 @@
 
 namespace Cacofony\Helper;
 
+use Cacofony\Factory\PDOFactory;
 use Firebase\JWT\JWT;
+use App\Manager\UserManager;
 
 class AuthHelper
 {
@@ -24,7 +26,12 @@ class AuthHelper
     public static function getLoggedUser(): object|bool
     {
         try {
+            if (!isset($_SESSION['user_badge'])) {
+                return false;
+            }
             $user = JWT::decode($_SESSION['user_badge'], $_ENV['APP_SECRET'], ['HS256']);
+            $userManager = new UserManager(PDOFactory::getInstance());
+            $user = $userManager->findByEmail($user->userName);
         } catch (\Exception $e) {
             return false;
         }

@@ -1,14 +1,51 @@
-#homePage:
-#    path: /
-#    controller: \App\Controller\PostController
-#    action: home
-#
-#showOne:
-#    path: /show/{id}-{truc}
-#    controller: \App\Controller\PostController
-#    action: show
-#
-#showTest:
-#    path: /show
-#    controller: \App\Controller\PostController
-#    action: showTest
+homePage:
+  path: /
+  controller: \App\Controller\PostController
+  action: home
+
+showOnePost:
+  path: /article/{id}
+  controller: \App\Controller\PostController
+  action: show
+
+listUsers:
+  path: /users
+  controller: \App\Controller\UserController
+  action: users
+
+showOneUser:
+  path: /users/{id}
+  controller: \App\Controller\UserController
+  action: user
+
+deleteOneUser:
+  path: /article/delete/{id}
+  controller: \App\Controller\PostController
+  action: delete
+
+addPost:
+  path: /add-post
+  controller: \App\Controller\PostController
+  action: add
+
+# Auth routes:
+
+login:
+  path: /login
+  controller: \App\Controller\SecurityController
+  action: login
+
+postLogin:
+  path: /login
+  controller: \App\Controller\SecurityController
+  action: postLogin
+
+register:
+  path: /register
+  controller: \App\Controller\SecurityController
+  action: register
+
+postRegister:
+  path: /postRegister
+  controller: \App\Controller\SecurityController
+  action: postRegister

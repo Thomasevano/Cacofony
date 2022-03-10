@@ -16,29 +16,50 @@ class PostController extends BaseController
      */
     public function getHome(PostManager $postManager, ExampleService $service)
     {
-        $posts = $postManager->findAll();
-        $this->render('Frontend/home', [
-            'posts' => $posts,
-            'strongText' => $service->getStrong('je suis du texte qui vient d\'un service en autowiring'),
-            'appSecret' => $service->getAppSecret()
-        ], 'Le titre de la page');
+        $posts = $postManager->findAllPosts();
+
+        $this->render('Frontend/home', ['posts' => $posts], 'le titre de la page');
     }
 
     /**
-     * @Route(path="/show/{id}-{truc}", name="showOne")
+     * @Route(path="/article/{id}", name="showOne")
      * @param int $id
-     * @param string $truc
      * @param PostManager $postManager
      * @return void
      */
-    public function getShow(int $id, string $truc, PostManager $postManager)
+    public function getShow(int $id, PostManager $postManager)
     {
-        $post = $postManager->findOneBy('id', $id);
+        $post = $postManager->findById($id);
 
         if (!$post) {
             $this->HTTPResponse->redirect('/');
         }
-        $this->render('Frontend/showOne', ['post' => $post], $truc);
+        $this->render('Frontend/Post/show_post', ['post' => $post], 'le titre de la page');
+    }
+
+    /**
+     * @Route(path="/article/delete/{id}", name="deleteOnePost")
+     * @param int $id
+     * @param PostManager $postManager
+     * @return void
+     */
+    public function getDeletePost(int $id, PostManager $postManager)
+    {
+        $post = $postManager->delete($id);
+
+        $this->render('Frontend/Post/test', ['post' => $id], 'Utilisateur: ');
+    }
+
+    /**
+     * @Route(path="/add-post", name="addPost")
+     * @param PostManager $postManager
+     * @return void
+     */
+    public function getAddPost(PostManager $postManager)
+    {
+        $post = $postManager->add($_POST['title'], $_POST['content']);
+
+        $this->render('Frontend/Post/add_post', ['post' => $post], 'Création d\'un post: ');
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Controller;
 use Cacofony\BaseClasse\BaseController;
 use Cacofony\Helper\AuthHelper;
 use Firebase\JWT\JWT;
+use App\Manager\UserManager;
 
 class SecurityController extends BaseController
 {
@@ -14,19 +15,38 @@ class SecurityController extends BaseController
      */
     public function getLogin()
     {
-        $this->render('Security/login', [], 'Please login');
+        $this->render('Frontend/Auth/login', [], 'Please login');
     }
 
     /**
      * @Route(path="/login")
+     * @param UserManager $userManager
      * @return void
      */
-    public function postLogin()
+    public function postLogin(UserManager $userManager)
     {
+        $user = $userManager->login($_POST['email'], $_POST['password']);
+        $secretKey  = $_ENV['APP_SECRET'];
+        $issuedAt   = new \DateTimeImmutable();
+        $expire     = $issuedAt->modify('+30 day')->getTimestamp();
+        $serverName = $_SERVER['SERVER_NAME'];
+
+        $data = [
+            'iat'  => $issuedAt->getTimestamp(),         // Issued at:  : heure à laquelle le jeton a été généré
+            'iss'  => $serverName,                       // Émetteur
+            'nbf'  => $issuedAt->getTimestamp(),         // Pas avant..
+            'exp'  => $expire,                           // Expiration
+            'userName' => $user->getEmail(),                     // Nom d'utilisateur
+        ];
+
+        if (!$user) {
+            return false;
+        } else {
+            $jwt = JWT::encode($data, $secretKey);
+            $_SESSION['user_badge'] = $jwt;
+            $this->HTTPResponse->redirect('/');
+        }
         // TODO - Validate credentials for real in DB and fill the payload with more infos
-        $jwt = JWT::encode(['user' => $this->HTTPRequest->getRequest('username')], $_ENV['APP_SECRET']);
-        $_SESSION['user_badge'] = $jwt;
-        $this->HTTPResponse->redirect('/');
     }
 
     /**
